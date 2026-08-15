@@ -36,6 +36,33 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# LOGIN-SCHUTZ
+# ═══════════════════════════════════════════════════════════════════════════════
+def check_password():
+    """Zeigt ein Passwortfeld, bis das korrekte Passwort eingegeben wurde."""
+
+    def password_entered():
+        if st.session_state["password"] == st.secrets["APP_PASSWORD"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]
+        else:
+            st.session_state["password_correct"] = False
+
+    if st.session_state.get("password_correct", False):
+        return True
+
+    st.markdown("### 🔒 OneEye Pro – Login")
+    st.text_input(
+        "Passwort", type="password",
+        on_change=password_entered, key="password"
+    )
+    if "password_correct" in st.session_state and not st.session_state["password_correct"]:
+        st.error("❌ Falsches Passwort")
+    return False
+
+if not check_password():
+    st.stop()
 st.markdown("""
 <style>
     .epic-badge { font-size: 1.3em; }
